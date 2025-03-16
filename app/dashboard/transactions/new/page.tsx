@@ -1,65 +1,82 @@
-"use client"
+"use client";
 
-import { useState } from "react"
-import { useRouter } from "next/navigation"
-import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { Textarea } from "@/components/ui/textarea"
-import { toast } from "@/hooks/use-toast"
-import { ArrowLeft } from "lucide-react"
-import Link from "next/link"
+import { useState } from "react";
+import { useRouter } from "next/navigation";
+import { Button } from "@/components/ui/button";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { Textarea } from "@/components/ui/textarea";
+import { toast } from "@/hooks/use-toast";
+import { ArrowLeft } from "lucide-react";
+import Link from "next/link";
 
 export default function NewTransactionPage() {
-  const router = useRouter()
-  const [isLoading, setIsLoading] = useState(false)
+  const router = useRouter();
+  const [isLoading, setIsLoading] = useState(false);
   const [formData, setFormData] = useState({
     type: "expense",
     amount: "",
     category: "",
     date: new Date().toISOString().split("T")[0],
     description: "",
-  })
+  });
 
-  const handleChange = (e) => {
-    const { name, value } = e.target
-    setFormData((prev) => ({ ...prev, [name]: value }))
-  }
+  const handleChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+  ) => {
+    const { name, value } = e.target;
+    setFormData((prev) => ({ ...prev, [name]: value }));
+  };
 
-  const handleSubmit = async (e) => {
-    e.preventDefault()
-    setIsLoading(true)
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    setIsLoading(true);
 
     try {
       const response = await fetch("/api/transactions", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(formData),
-      })
+      });
 
       if (!response.ok) {
-        const errorData = await response.json()
-        throw new Error(errorData.error || "Failed to add transaction")
+        const errorData = await response.json();
+        throw new Error(errorData.error || "Failed to add transaction");
       }
 
       toast({
         title: "Transaction added",
         description: "Your transaction has been added successfully.",
-      })
+      });
 
-      router.push("/dashboard/transactions")
-    } catch (error) {
+      router.push("/dashboard/transactions");
+    } catch (error: any) {
       toast({
         title: "Something went wrong",
-        description: error.message || "Your transaction couldn't be added. Please try again.",
+        description:
+          error.message ||
+          "Your transaction couldn't be added. Please try again.",
         variant: "destructive",
-      })
+      });
     } finally {
-      setIsLoading(false)
+      setIsLoading(false);
     }
-  }
+  };
 
   const incomeCategories = [
     { value: "salary", label: "Salary" },
@@ -67,7 +84,7 @@ export default function NewTransactionPage() {
     { value: "investment", label: "Investment" },
     { value: "gift", label: "Gift" },
     { value: "other", label: "Other" },
-  ]
+  ];
 
   const expenseCategories = [
     { value: "food", label: "Food & Dining" },
@@ -81,7 +98,7 @@ export default function NewTransactionPage() {
     { value: "personal", label: "Personal Care" },
     { value: "travel", label: "Travel" },
     { value: "other", label: "Other" },
-  ]
+  ];
 
   return (
     <div className="flex flex-col gap-4">
@@ -99,14 +116,22 @@ export default function NewTransactionPage() {
         <form onSubmit={handleSubmit}>
           <CardHeader>
             <CardTitle>Transaction Details</CardTitle>
-            <CardDescription>Enter the details of your transaction</CardDescription>
+            <CardDescription>
+              Enter the details of your transaction
+            </CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
             <div className="space-y-2">
               <Label htmlFor="type">Transaction Type</Label>
               <Select
                 value={formData.type}
-                onValueChange={(value) => setFormData(prev => ({ ...prev, type: value, category: "" }))}
+                onValueChange={(value) =>
+                  setFormData((prev) => ({
+                    ...prev,
+                    type: value,
+                    category: "",
+                  }))
+                }
               >
                 <SelectTrigger id="type">
                   <SelectValue placeholder="Select type" />
@@ -136,7 +161,9 @@ export default function NewTransactionPage() {
               <Label htmlFor="category">Category</Label>
               <Select
                 value={formData.category}
-                onValueChange={(value) => setFormData(prev => ({ ...prev, category: value }))}
+                onValueChange={(value) =>
+                  setFormData((prev) => ({ ...prev, category: value }))
+                }
               >
                 <SelectTrigger id="category">
                   <SelectValue placeholder="Select category" />
@@ -159,7 +186,14 @@ export default function NewTransactionPage() {
 
             <div className="space-y-2">
               <Label htmlFor="date">Date</Label>
-              <Input id="date" name="date" type="date" required value={formData.date} onChange={handleChange} />
+              <Input
+                id="date"
+                name="date"
+                type="date"
+                required
+                value={formData.date}
+                onChange={handleChange}
+              />
             </div>
 
             <div className="space-y-2">
@@ -184,5 +218,5 @@ export default function NewTransactionPage() {
         </form>
       </Card>
     </div>
-  )
+  );
 }

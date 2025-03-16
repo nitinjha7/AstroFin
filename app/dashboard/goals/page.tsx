@@ -1,10 +1,7 @@
 "use client";
 
-// <<<<<<< nitin
-// import { useState, useEffect } from "react";
-// =======
 import React, { useState, useEffect, ReactElement } from "react";
-// >>>>>>> main
+
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -42,11 +39,9 @@ import { IGoal } from "@/models/goal";
 export default function GoalsPage() {
   const [open, setOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
-// <<<<<<< nitin
-//   const [goals, setGoals] = useState([]);
-// =======
+
   const [goals, setGoals] = useState<IGoal[]>([]);
-// >>>>>>> main
+
   const [loading, setLoading] = useState(true);
   const [formData, setFormData] = useState({
     name: "",
@@ -84,30 +79,18 @@ export default function GoalsPage() {
     fetchGoals();
   }, []);
 
-//-- <<<<<<< nitin
-  // const handleChange = (e) => {
-//======= -->
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
   ) => {
-// >>>>>>> main
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
-//-- <<<<<<< nitin
-//   const handleSelectChange = (name, value) => {
-//     setFormData((prev) => ({ ...prev, [name]: value }));
-//   };
-//
-//   const handleSubmit = async (e) => {
-// ======= -->
   const handleSelectChange = (name: string, value: string) => {
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
-// >>>>>>> main
     e.preventDefault();
     setIsLoading(true);
 
@@ -141,11 +124,7 @@ export default function GoalsPage() {
         category: "",
         description: "",
       });
-//<!-- <<<<<<< nitin
-    // } catch (error) {
-// ======= -->
-    } catch (error:any) {
-// >>>>>>> main
+    } catch (error: any) {
       toast({
         title: "Something went wrong",
         description:
@@ -156,17 +135,14 @@ export default function GoalsPage() {
       setIsLoading(false);
     }
   };
-// <!-- <<<<<<< nitin -->
 
-  const updateGoalProgress = (updatedGoal) => {
+  const updateGoalProgress = (updatedGoal: IGoal) => {
     setGoals((prevGoals) =>
       prevGoals.map((goal) =>
         goal._id === updatedGoal._id ? updatedGoal : goal
       )
     );
   };
-//<!-- =======
-//>>>>>>> main -->
 
   if (loading) {
     return (
@@ -306,7 +282,6 @@ export default function GoalsPage() {
           </Card>
         ) : (
           goals.map((goal) => {
-
             const progress = Math.round(
               (goal.currentAmount / goal.targetAmount) * 100
             );

@@ -13,8 +13,14 @@ import {
   YAxis,
 } from "recharts";
 
+interface IChartData {
+  name: string;
+  income: number;
+  expenses: number;
+  savings: number;
+}
 export function Overview() {
-  const [chartData, setChartData] = useState([]);
+  const [chartData, setChartData] = useState<IChartData[]>([]);
 
   useEffect(() => {
     async function fetchChartData() {

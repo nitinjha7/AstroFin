@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { ReactNode, useState } from "react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { signOut, useSession } from "next-auth/react";
@@ -22,8 +22,9 @@ import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { cn } from "@/lib/utils";
 import { toast } from "@/hooks/use-toast";
+import EditProfile from "@/components/dashboard/EditProfile";
 
-export default function DashboardLayout({ children }) {
+export default function DashboardLayout({ children }: { children: ReactNode }) {
   const pathname = usePathname();
   const router = useRouter();
   const { data: session, status } = useSession();
@@ -31,7 +32,8 @@ export default function DashboardLayout({ children }) {
 
   // Redirect if not authenticated
   if (status === "unauthenticated") {
-    router.push("/login");
+    // router.push("/login");
+    window.open("/");
     return null;
   }
 
@@ -169,9 +171,8 @@ export default function DashboardLayout({ children }) {
           <span>FinanceTracker</span>
         </Link>
         <div className="ml-auto flex items-center gap-2">
-          <span className="hidden md:inline-block text-sm">
-            Welcome, {session?.user?.name || "User"}
-          </span>
+          <EditProfile />
+
           <Button
             variant="outline"
             size="sm"
