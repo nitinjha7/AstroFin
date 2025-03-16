@@ -28,10 +28,6 @@ export default function NewTransactionPage() {
     setFormData((prev) => ({ ...prev, [name]: value }))
   }
 
-  const handleSelectChange = (name, value) => {
-    setFormData((prev) => ({ ...prev, [name]: value }))
-  }
-
   const handleSubmit = async (e) => {
     e.preventDefault()
     setIsLoading(true)
@@ -108,7 +104,10 @@ export default function NewTransactionPage() {
           <CardContent className="space-y-4">
             <div className="space-y-2">
               <Label htmlFor="type">Transaction Type</Label>
-              <Select name="type" value={formData.type} onValueChange={(value) => handleSelectChange("type", value)}>
+              <Select
+                value={formData.type}
+                onValueChange={(value) => setFormData(prev => ({ ...prev, type: value, category: "" }))}
+              >
                 <SelectTrigger id="type">
                   <SelectValue placeholder="Select type" />
                 </SelectTrigger>
@@ -136,10 +135,8 @@ export default function NewTransactionPage() {
             <div className="space-y-2">
               <Label htmlFor="category">Category</Label>
               <Select
-                name="category"
                 value={formData.category}
-                onValueChange={(value) => handleSelectChange("category", value)}
-                required
+                onValueChange={(value) => setFormData(prev => ({ ...prev, category: value }))}
               >
                 <SelectTrigger id="category">
                   <SelectValue placeholder="Select category" />
@@ -189,4 +186,3 @@ export default function NewTransactionPage() {
     </div>
   )
 }
-
