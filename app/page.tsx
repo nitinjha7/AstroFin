@@ -9,6 +9,7 @@ export default function Home() {
       <header className="bg-background border-b w-[100%] px-4 md:px-6 ">
         <div className=" flex h-16 items-center justify-between ">
           <div className="flex items-center gap-2">
+            <img src="/logo.png" alt="" className="size-10 rounded-md" />
             <span className="text-xl font-bold">AstraFin</span>
           </div>
           <nav className="hidden md:flex gap-6">

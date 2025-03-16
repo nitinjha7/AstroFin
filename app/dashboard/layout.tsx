@@ -115,7 +115,7 @@ export default function DashboardLayout({ children }: { children: ReactNode }) {
                 className="flex items-center gap-2 text-lg font-semibold"
                 onClick={() => setOpen(false)}
               >
-                <DollarSign className="h-6 w-6" />
+                <img src="/logo.png" alt="" className="size-10 rounded-md" />
                 <span className="sr-only">AstraFin</span>
               </Link>
               {routes.map((route) => (
@@ -149,7 +149,7 @@ export default function DashboardLayout({ children }: { children: ReactNode }) {
           href="/"
           className="flex items-center gap-2 text-lg font-semibold"
         >
-          <DollarSign className="h-6 w-6" />
+          <img src="/logo.png" alt="" className="size-10 rounded-md" />
           <span>AstraFin</span>
         </Link>
         <div className="ml-auto flex items-center gap-2">
