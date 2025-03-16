@@ -9,7 +9,7 @@ export default function Home() {
       <header className="bg-background border-b w-[100%] px-4 md:px-6 ">
         <div className=" flex h-16 items-center justify-between ">
           <div className="flex items-center gap-2">
-            <span className="text-xl font-bold">FinanceTracker</span>
+            <span className="text-xl font-bold">AstraFin</span>
           </div>
           <nav className="hidden md:flex gap-6">
             <Link
@@ -134,7 +134,7 @@ export default function Home() {
       <footer className="border-t py-6 md:py-0">
         <div className="container flex flex-col items-center justify-between gap-4 md:h-24 md:flex-row">
           <p className="text-sm text-muted-foreground">
-            © 2023 FinanceTracker. All rights reserved.
+            © 2025 AstraFin. All rights reserved.
           </p>
           <nav className="flex gap-4 sm:gap-6">
             <Link

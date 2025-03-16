@@ -6,7 +6,7 @@ import "./globals.css";
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata = {
-  title: "FinanceTracker - Personal Finance Management",
+  title: "AstraFin - Personal Finance Management",
   description:
     "Manage your finances, track expenses, set goals, and get investment recommendations",
   generator: "v0.dev",

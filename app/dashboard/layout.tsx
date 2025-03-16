@@ -84,22 +84,10 @@ export default function DashboardLayout({ children }: { children: ReactNode }) {
       active: pathname === "/dashboard/budget",
     },
     {
-      label: "Reports",
-      icon: BarChart3,
-      href: "/dashboard/reports",
-      active: pathname === "/dashboard/reports",
-    },
-    {
       label: "AI Assistant",
       href: "/dashboard/ai-assistant",
       icon: MessageSquare,
       active: pathname === "/dashboard/ai-assistant",
-    },
-    {
-      label: "Settings",
-      icon: Settings,
-      href: "/dashboard/settings",
-      active: pathname === "/dashboard/settings",
     },
   ];
 
@@ -134,7 +122,7 @@ export default function DashboardLayout({ children }: { children: ReactNode }) {
                 onClick={() => setOpen(false)}
               >
                 <DollarSign className="h-6 w-6" />
-                <span className="sr-only">FinanceTracker</span>
+                <span className="sr-only">AstraFin</span>
               </Link>
               {routes.map((route) => (
                 <Link
@@ -168,7 +156,7 @@ export default function DashboardLayout({ children }: { children: ReactNode }) {
           className="flex items-center gap-2 text-lg font-semibold"
         >
           <DollarSign className="h-6 w-6" />
-          <span>FinanceTracker</span>
+          <span>AstraFin</span>
         </Link>
         <div className="ml-auto flex items-center gap-2">
           <EditProfile />
