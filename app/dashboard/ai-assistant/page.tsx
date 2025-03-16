@@ -28,14 +28,16 @@ import {
 } from "lucide-react";
 import aiHelper, { userRequestFromFrontend } from "@/lib/gemini";
 
-export interface IMessages {
+import MarkdownPreview from "@uiw/react-markdown-preview";
+
+export interface IMessage {
   id: string;
   role: string;
   content: string;
-  timestamp: string | Date;
+  timestamp: number | Date;
 }
 // Mock chat history
-const initialMessages: IMessages[] = [
+const initialMessages: IMessage[] = [
   {
     id: "welcome",
     role: "assistant",
@@ -56,7 +58,7 @@ const suggestedQuestions = [
 ];
 
 function AIAssistant() {
-  const [messages, setMessages] = useState<IMessages[]>(initialMessages);
+  const [messages, setMessages] = useState<IMessage[]>(initialMessages);
   const [input, setInput] = useState("");
   const [loading, setLoading] = useState(false);
   const [showSuggestions, setShowSuggestions] = useState(true);
@@ -64,7 +66,7 @@ function AIAssistant() {
 
   // Auto-scroll to bottom of messages
   useEffect(() => {
-    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+    (messagesEndRef as any).current?.scrollIntoView({ behavior: "smooth" });
   }, [messages]);
 
   const handleSendMessage = async (messageText = input) => {
@@ -75,7 +77,7 @@ function AIAssistant() {
       id: Date.now().toString(),
       role: "user",
       content: messageText,
-      timestamp: new Date(),
+      timestamp: new Date().getTime(),
     };
 
     setMessages((prev) => [...prev, userMessage]);
@@ -84,16 +86,14 @@ function AIAssistant() {
 
     // Simulate AI response delay
     setTimeout(() => {
-      generateAIResponse(messageText);
+      generateAIResponse(userMessage);
     }, 1500);
   };
 
-  const generateAIResponse = async (userMessage: string) => {
+  const generateAIResponse = async (userMessage: IMessage) => {
     let aiResponse = "";
 
-    aiResponse = await aiHelper(
-      userRequestFromFrontend(messages[messages.length - 1])
-    );
+    aiResponse = await aiHelper(userRequestFromFrontend(userMessage));
 
     const assistantMessage = {
       id: Date.now().toString(),
@@ -106,7 +106,7 @@ function AIAssistant() {
     setLoading(false);
   };
 
-  const handleKeyDown = (e) => {
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === "Enter" && !e.shiftKey) {
       e.preventDefault();
       handleSendMessage();
@@ -114,6 +114,7 @@ function AIAssistant() {
   };
 
   const formatTimestamp = (timestamp: number) => {
+    console.log(timestamp);
     return new Date(timestamp).toLocaleTimeString([], {
       hour: "2-digit",
       minute: "2-digit",
@@ -122,7 +123,7 @@ function AIAssistant() {
 
   return (
     <div className="w-full">
-      <Card className="md:col-span-2 flex flex-col h-[70vh]">
+      <Card className="md:col-span-2 flex flex-col h-[80vh]">
         <CardHeader className="pb-2">
           <CardTitle className="flex items-center">
             <Bot className="mr-2 h-5 w-5 text-primary" />
@@ -169,8 +170,16 @@ function AIAssistant() {
                           : "bg-muted"
                       }`}
                     >
-                      <div className="whitespace-pre-wrap">
-                        {message.content}
+                      <div className="whitespace-pre-wrap markdown-container">
+                        <MarkdownPreview
+                          source={message.content}
+                          style={{
+                            padding: "2px",
+                            background: "transparent",
+                            color: message.role === "user" ? "white" : "black",
+                            textWrap: "wrap",
+                          }}
+                        />
                       </div>
                     </div>
                     <div
@@ -178,7 +187,7 @@ function AIAssistant() {
                         message.role === "user" ? "text-right" : ""
                       }`}
                     >
-                      {formatTimestamp(message.timestamp)}
+                      {formatTimestamp(message.timestamp as number)}
                     </div>
                   </div>
                 </div>
@@ -202,7 +211,22 @@ function AIAssistant() {
           </div>
         </CardContent>
 
-        <CardFooter className="pt-4">
+        <CardFooter className="pt-4 flex flex-col">
+          {messages.length <= 1 && (
+            <div className="flex overflow-x-scroll gap-5 w-full">
+              {suggestedQuestions?.map((suggestedQuestion, index) => (
+                <p
+                  className="border p-2 border-gray-400 rounded-md cursor-pointer text-sm"
+                  onClick={() => {
+                    handleSendMessage(suggestedQuestion);
+                  }}
+                  key={suggestedQuestion + index}
+                >
+                  {suggestedQuestion}
+                </p>
+              ))}
+            </div>
+          )}
           <form
             className="flex w-full items-center space-x-2"
             onSubmit={(e) => {
