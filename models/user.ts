@@ -1,5 +1,12 @@
-import mongoose from "mongoose"
+import mongoose from "mongoose";
 
+export interface IUser {
+  _id?: string;
+  name: string;
+  email: string;
+  password?: string;
+  createdAt: Date | number;
+}
 const UserSchema = new mongoose.Schema({
   name: {
     type: String,
@@ -10,7 +17,10 @@ const UserSchema = new mongoose.Schema({
     type: String,
     required: [true, "Please provide an email"],
     unique: true,
-    match: [/^\w+([.-]?\w+)*@\w+([.-]?\w+)*(\.\w{2,3})+$/, "Please provide a valid email"],
+    match: [
+      /^\w+([.-]?\w+)*@\w+([.-]?\w+)*(\.\w{2,3})+$/,
+      "Please provide a valid email",
+    ],
   },
   password: {
     type: String,
@@ -21,7 +31,6 @@ const UserSchema = new mongoose.Schema({
     type: Date,
     default: Date.now,
   },
-})
+});
 
-export const User = mongoose.models.User || mongoose.model("User", UserSchema)
-
+export const User = mongoose.models.User || mongoose.model("User", UserSchema);
