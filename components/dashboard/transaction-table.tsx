@@ -72,7 +72,9 @@ export function TransactionTable({ type = "all", searchTerm = "" }) {
 
         const data = await response.json();
         setTransactions(data.transactions || []);
+
       } catch (error: any) {
+
         if (error.name !== "AbortError") {
           console.error("Error fetching transactions:", error);
           toast({

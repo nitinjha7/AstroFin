@@ -43,6 +43,7 @@ export default function NewTransactionPage() {
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
+
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setIsLoading(true);
@@ -125,6 +126,7 @@ export default function NewTransactionPage() {
               <Label htmlFor="type">Transaction Type</Label>
               <Select
                 value={formData.type}
+
                 onValueChange={(value) =>
                   setFormData((prev) => ({
                     ...prev,
@@ -132,6 +134,7 @@ export default function NewTransactionPage() {
                     category: "",
                   }))
                 }
+
               >
                 <SelectTrigger id="type">
                   <SelectValue placeholder="Select type" />
@@ -161,9 +164,11 @@ export default function NewTransactionPage() {
               <Label htmlFor="category">Category</Label>
               <Select
                 value={formData.category}
+
                 onValueChange={(value) =>
                   setFormData((prev) => ({ ...prev, category: value }))
                 }
+
               >
                 <SelectTrigger id="category">
                   <SelectValue placeholder="Select category" />
@@ -218,5 +223,7 @@ export default function NewTransactionPage() {
         </form>
       </Card>
     </div>
+
   );
 }
+

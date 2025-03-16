@@ -79,12 +79,14 @@ export default function GoalsPage() {
     fetchGoals();
   }, []);
 
+
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
   ) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
+
 
   const handleSelectChange = (name: string, value: string) => {
     setFormData((prev) => ({ ...prev, [name]: value }));
@@ -124,7 +126,9 @@ export default function GoalsPage() {
         category: "",
         description: "",
       });
+
     } catch (error: any) {
+      
       toast({
         title: "Something went wrong",
         description:
@@ -282,6 +286,7 @@ export default function GoalsPage() {
           </Card>
         ) : (
           goals.map((goal) => {
+
             const progress = Math.round(
               (goal.currentAmount / goal.targetAmount) * 100
             );
