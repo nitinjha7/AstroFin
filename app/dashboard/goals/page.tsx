@@ -85,7 +85,7 @@ export default function GoalsPage() {
   }, []);
 
 //-- <<<<<<< nitin
-  const handleChange = (e) => {
+  // const handleChange = (e) => {
 //======= -->
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
@@ -99,7 +99,7 @@ export default function GoalsPage() {
 //   const handleSelectChange = (name, value) => {
 //     setFormData((prev) => ({ ...prev, [name]: value }));
 //   };
-// 
+//
 //   const handleSubmit = async (e) => {
 // ======= -->
   const handleSelectChange = (name: string, value: string) => {
@@ -130,13 +130,8 @@ export default function GoalsPage() {
         description: "Your savings goal has been created successfully.",
       });
 
-//<<<<<<< nitin
-      setGoals([...goals, data.goal]);
-// <!-- =======
-      // Add the new goal to the state
       setGoals([...goals, data.goal]);
 
-// >>>>>>> main -->
       setOpen(false);
       setFormData({
         name: "",
@@ -147,7 +142,7 @@ export default function GoalsPage() {
         description: "",
       });
 //<!-- <<<<<<< nitin
-    } catch (error) {
+    // } catch (error) {
 // ======= -->
     } catch (error:any) {
 // >>>>>>> main
@@ -311,10 +306,7 @@ export default function GoalsPage() {
           </Card>
         ) : (
           goals.map((goal) => {
-// <<<<<<< nitin
-// =======
-//             // Calculate progress percentage
-// >>>>>>> main
+
             const progress = Math.round(
               (goal.currentAmount / goal.targetAmount) * 100
             );
