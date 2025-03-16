@@ -3,6 +3,7 @@ import { connectToDatabase } from "@/lib/db";
 import { Transaction } from "@/models/transaction";
 import { getServerSession } from "next-auth/next";
 import { authOptions } from "@/lib/auth";
+import { Budget } from "@/models/budget";
 
 // Get all transactions for the authenticated user
 export async function GET(req: Request) {
@@ -86,6 +87,20 @@ export async function POST(req: Request) {
     });
 
     await transaction.save();
+
+    if (type !== "expense") {
+      return NextResponse.json({ transaction }, { status: 201 });
+    }
+
+    const budget = await Budget.findOne({
+      userId: session?.user?.id,
+      category: category,
+    });
+
+    if (!!budget) {
+      budget.currentAmount += Math.abs(parseInt(amount));
+      await budget.save();
+    }
 
     return NextResponse.json({ transaction }, { status: 201 });
   } catch (error) {
