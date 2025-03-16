@@ -11,26 +11,48 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { ITransaction } from "@/models/transaction";
 
 export function RecentTransactions() {
-  const [transactions, setTransactions] = useState([]);
+  const [transactions, setTransactions] = useState<ITransaction[]>([]);
 
   useEffect(() => {
-    async function fetchTransactions() {
-      const response = await fetch("/api/dashboard");
-      const data = await response.json();
-      setTransactions(data.transactions.slice(0, 5)); // Show only 5 latest transactions
-    }
-
     fetchTransactions();
   }, []);
 
+  async function fetchTransactions() {
+    const response = await fetch("/api/transactions");
+    const data = await response.json();
+    setTransactions(data.transactions.slice(0, 5)); // Show only 5 latest transactions
+  }
+
+  async function addTransaction() {
+    const newTransaction = {
+      description: "Freelance Work",
+      amount: 5000,
+      type: "income",
+      date: new Date().toISOString(),
+      category: "Salary",
+    };
+
+    await fetch("/api/transactions", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(newTransaction),
+    });
+
+    fetchTransactions(); // Refresh transactions after adding
+  }
+
   return (
     <div className="space-y-4">
+      <Button onClick={addTransaction} className="mb-4">
+        Add Transaction
+      </Button>
+
       {transactions.map((transaction) => (
-        <div key={transaction.id} className="flex items-center justify-between">
+        <div key={transaction._id} className="flex items-center justify-between">
           <div className="flex items-center gap-4">
-            {/* Fixed className syntax for transaction icon */}
             <div
               className={`rounded-full p-2 ${
                 transaction.type === "income" ? "bg-green-100" : "bg-red-100"
@@ -49,6 +71,7 @@ export function RecentTransactions() {
               </p>
             </div>
           </div>
+
           <div className="flex items-center gap-4">
             <div className="text-right">
               <p
@@ -69,6 +92,7 @@ export function RecentTransactions() {
                 })}
               </p>
             </div>
+
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <Button variant="ghost" size="icon" className="h-8 w-8">
@@ -81,9 +105,7 @@ export function RecentTransactions() {
                 <DropdownMenuItem>View details</DropdownMenuItem>
                 <DropdownMenuItem>Edit transaction</DropdownMenuItem>
                 <DropdownMenuSeparator />
-                <DropdownMenuItem className="text-red-600">
-                  Delete
-                </DropdownMenuItem>
+                <DropdownMenuItem className="text-red-600">Delete</DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
           </div>

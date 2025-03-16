@@ -28,14 +28,17 @@ import {
 } from "lucide-react";
 import aiHelper, { userRequestFromFrontend } from "@/lib/gemini";
 
-export interface IMessages {
+import Markdown from "react-markdown";
+import { ITransaction } from "@/models/transaction";
+
+export interface IMessage {
   id: string;
   role: string;
   content: string;
-  timestamp: string | Date;
+  timestamp: number | Date;
 }
 // Mock chat history
-const initialMessages: IMessages[] = [
+const initialMessages: IMessage[] = [
   {
     id: "welcome",
     role: "assistant",
@@ -56,44 +59,69 @@ const suggestedQuestions = [
 ];
 
 function AIAssistant() {
-  const [messages, setMessages] = useState<IMessages[]>(initialMessages);
+  const [messages, setMessages] = useState<IMessage[]>(initialMessages);
   const [input, setInput] = useState("");
   const [loading, setLoading] = useState(false);
   const [showSuggestions, setShowSuggestions] = useState(true);
+  const [selectedTimeRange, setSelectedTimeRange] = useState<string>("");
   const messagesEndRef = useRef(null);
 
   // Auto-scroll to bottom of messages
   useEffect(() => {
-    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+    (messagesEndRef as any).current?.scrollIntoView({ behavior: "smooth" });
   }, [messages]);
 
   const handleSendMessage = async (messageText = input) => {
     if (!messageText.trim()) return;
-
     // Add user message
     const userMessage = {
       id: Date.now().toString(),
       role: "user",
       content: messageText,
-      timestamp: new Date(),
+      timestamp: new Date().getTime(),
     };
 
     setMessages((prev) => [...prev, userMessage]);
     setInput("");
     setLoading(true);
 
+    let transactionData: any;
+    if (selectedTimeRange === "Last Month") {
+      const currDate = new Date();
+      let startDate = currDate.getTime() - 30 * 24 * 60 * 60 * 1000;
+
+      let endDate = currDate.getTime();
+      transactionData = await fetch(
+        `/api/transactions?startDate=${startDate}&endDate=${endDate}`
+      );
+
+      transactionData = await transactionData.json();
+    }
+    if (selectedTimeRange === "Last Week") {
+      const currDate = new Date();
+      let startDate = currDate.getTime() - 30 * 24 * 60 * 60 * 1000;
+
+      let endDate = currDate.getTime();
+      transactionData = await fetch(
+        `/api/transactions?startDate=${startDate}&endDate=${endDate}`
+      );
+
+      transactionData = await transactionData.json();
+    }
+
     // Simulate AI response delay
     setTimeout(() => {
-      generateAIResponse(messageText);
+      generateAIResponse({
+        userMessage: userMessage,
+        transactionData: transactionData,
+      });
     }, 1500);
   };
 
-  const generateAIResponse = async (userMessage: string) => {
+  const generateAIResponse = async (userMessage: any) => {
     let aiResponse = "";
 
-    aiResponse = await aiHelper(
-      userRequestFromFrontend(messages[messages.length - 1])
-    );
+    aiResponse = await aiHelper(userRequestFromFrontend(userMessage));
 
     const assistantMessage = {
       id: Date.now().toString(),
@@ -106,7 +134,7 @@ function AIAssistant() {
     setLoading(false);
   };
 
-  const handleKeyDown = (e) => {
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === "Enter" && !e.shiftKey) {
       e.preventDefault();
       handleSendMessage();
@@ -114,6 +142,7 @@ function AIAssistant() {
   };
 
   const formatTimestamp = (timestamp: number) => {
+    console.log(timestamp);
     return new Date(timestamp).toLocaleTimeString([], {
       hour: "2-digit",
       minute: "2-digit",
@@ -121,8 +150,46 @@ function AIAssistant() {
   };
 
   return (
-    <div className="w-full">
-      <Card className="md:col-span-2 flex flex-col h-[70vh]">
+    <div className="w-full relative">
+      <div className="absolute top-4 right-4 border  bg-gray-100 rounded-md flex gap-4 items-center px-1">
+        <p
+          className={
+            selectedTimeRange === ""
+              ? "bg-white rounded-md py-2 px-1 cursor-pointer"
+              : "cursor-pointer"
+          }
+          onClick={() => {
+            setSelectedTimeRange("");
+          }}
+        >
+          None
+        </p>{" "}
+        <p
+          className={
+            selectedTimeRange === "Last Month"
+              ? "bg-white rounded-md py-2 px-1 cursor-pointer"
+              : "cursor-pointer"
+          }
+          onClick={() => {
+            setSelectedTimeRange("Last Month");
+          }}
+        >
+          Last Month
+        </p>
+        <p
+          className={
+            selectedTimeRange === "Last Week"
+              ? "bg-white rounded-md py-2 px-1 cursor-pointer"
+              : " cursor-pointer"
+          }
+          onClick={() => {
+            setSelectedTimeRange("Last Week");
+          }}
+        >
+          Last Week
+        </p>
+      </div>
+      <Card className="md:col-span-2 flex flex-col h-[80vh]">
         <CardHeader className="pb-2">
           <CardTitle className="flex items-center">
             <Bot className="mr-2 h-5 w-5 text-primary" />
@@ -134,7 +201,7 @@ function AIAssistant() {
         </CardHeader>
 
         <CardContent className="flex-grow overflow-y-auto pb-0">
-          <div className="space-y-4">
+          <div className="space-y-2">
             {messages.map((message) => (
               <div
                 key={message.id}
@@ -169,8 +236,8 @@ function AIAssistant() {
                           : "bg-muted"
                       }`}
                     >
-                      <div className="whitespace-pre-wrap">
-                        {message.content}
+                      <div className="whitespace-pre-wrap markdown-container">
+                        <Markdown>{message.content}</Markdown>
                       </div>
                     </div>
                     <div
@@ -178,7 +245,7 @@ function AIAssistant() {
                         message.role === "user" ? "text-right" : ""
                       }`}
                     >
-                      {formatTimestamp(message.timestamp)}
+                      {formatTimestamp(message.timestamp as number)}
                     </div>
                   </div>
                 </div>
@@ -202,7 +269,22 @@ function AIAssistant() {
           </div>
         </CardContent>
 
-        <CardFooter className="pt-4">
+        <CardFooter className="pt-4 flex flex-col">
+          {messages.length <= 1 && (
+            <div className="flex overflow-x-scroll gap-5 w-full">
+              {suggestedQuestions?.map((suggestedQuestion, index) => (
+                <p
+                  className="border p-2 border-gray-400 rounded-md cursor-pointer text-sm"
+                  onClick={() => {
+                    handleSendMessage(suggestedQuestion);
+                  }}
+                  key={suggestedQuestion + index}
+                >
+                  {suggestedQuestion}
+                </p>
+              ))}
+            </div>
+          )}
           <form
             className="flex w-full items-center space-x-2"
             onSubmit={(e) => {

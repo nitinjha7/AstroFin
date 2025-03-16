@@ -1,5 +1,6 @@
 "use client";
 
+import { ITransaction } from "@/models/transaction";
 import { useEffect, useState } from "react";
 import {
   Bar,
@@ -21,8 +22,10 @@ export function Overview() {
       const data = await response.json();
 
       // Group transactions by month
-      const monthlyData = {};
-      data.transactions.forEach((transaction) => {
+      const monthlyData: {
+        [key: string]: { income: number; expenses: number; savings: number };
+      } = {};
+      data.transactions.forEach((transaction: ITransaction) => {
         const month = new Date(transaction.date).toLocaleString("default", {
           month: "short",
         });

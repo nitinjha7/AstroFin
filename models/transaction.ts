@@ -1,4 +1,15 @@
-import mongoose from "mongoose"
+import mongoose from "mongoose";
+
+export interface ITransaction {
+  _id?: string;
+  userId?: string;
+  type: string;
+  amount: number;
+  category: string;
+  date: Date | number;
+  description: string;
+  createdAt: Date | number;
+}
 
 const TransactionSchema = new mongoose.Schema({
   userId: {
@@ -32,7 +43,8 @@ const TransactionSchema = new mongoose.Schema({
     type: Date,
     default: Date.now,
   },
-})
+});
 
-export const Transaction = mongoose.models.Transaction || mongoose.model("Transaction", TransactionSchema)
-
+export const Transaction =
+  mongoose.models.Transaction ||
+  mongoose.model("Transaction", TransactionSchema);

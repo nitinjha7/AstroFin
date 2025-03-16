@@ -1,87 +1,99 @@
-import { NextResponse } from "next/server"
-import { connectToDatabase } from "@/lib/db"
-import { Transaction } from "@/models/transaction"
-import { getServerSession } from "next-auth/next"
-import { authOptions } from "@/lib/auth"
+import { NextResponse } from "next/server";
+import { connectToDatabase } from "@/lib/db";
+import { Transaction } from "@/models/transaction";
+import { getServerSession } from "next-auth/next";
+import { authOptions } from "@/lib/auth";
 
 // Get all transactions for the authenticated user
 export async function GET(req: Request) {
   try {
-    const session = await getServerSession(authOptions)
+    const session = await getServerSession(authOptions);
 
     if (!session || !session.user?.id) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    const userId = session.user.id
+    const userId = session.user.id;
 
     // Connect to database
-    await connectToDatabase()
+    await connectToDatabase();
 
     // Get query parameters
-    const url = new URL(req.url)
-    const type = url.searchParams.get("type")
-    const category = url.searchParams.get("category")
-    const startDate = url.searchParams.get("startDate")
-    const endDate = url.searchParams.get("endDate")
+    const url = new URL(req.url);
+    const type = url.searchParams.get("type");
+    const category = url.searchParams.get("category");
+    const startDate = url.searchParams.get("startDate");
+    const endDate = url.searchParams.get("endDate");
 
     // Build query
-    const query: any = { userId }
-
-    if (type) query.type = type
-    if (category) query.category = category
+    const query: any = { userId };
+    // console.log(startDate, endDate);
+    if (type) query.type = type;
+    if (category) query.category = category;
     if (startDate || endDate) {
-      query.date = {}
-      if (startDate) query.date.$gte = new Date(startDate)
-      if (endDate) query.date.$lte = new Date(endDate)
+      query.date = {};
+      if (startDate) query.date.$gte = new Date(parseInt(startDate));
+      if (endDate) query.date.$lte = new Date(parseInt(endDate));
     }
 
+    console.log("query ->", query);
     // Get transactions
-    const transactions = await Transaction.find(query).sort({ date: -1 })
+    const transactions = await Transaction.find(query).sort({ date: -1 });
 
-    return NextResponse.json({ transactions })
+    return NextResponse.json({ transactions });
   } catch (error) {
-    console.error("Get transactions error:", error)
-    return NextResponse.json({ error: "Internal server error" }, { status: 500 })
+    console.error("Get transactions error:", error);
+    return NextResponse.json(
+      { error: "Internal server error" },
+      { status: 500 }
+    );
   }
 }
 
 // Create a new transaction
 export async function POST(req: Request) {
   try {
-    const session = await getServerSession(authOptions)
+    const session = await getServerSession(authOptions);
 
     if (!session || !session.user?.id) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    const userId = session.user.id
-    const { type, amount, category, date, description } = await req.json()
+    const userId = session.user.id;
+    const { type, amount, category, date, description } = await req.json();
 
     // Validate input
     if (!type || !amount || !category || !date) {
-      return NextResponse.json({ error: "Missing required fields" }, { status: 400 })
+      return NextResponse.json(
+        { error: "Missing required fields" },
+        { status: 400 }
+      );
     }
 
     // Connect to database
-    await connectToDatabase()
+    await connectToDatabase();
 
     // Create transaction
     const transaction = new Transaction({
       userId,
       type,
-      amount: type === "expense" ? -Math.abs(Number(amount)) : Math.abs(Number(amount)),
+      amount:
+        type === "expense"
+          ? -Math.abs(Number(amount))
+          : Math.abs(Number(amount)),
       category,
       date: new Date(date),
       description,
-    })
+    });
 
-    await transaction.save()
+    await transaction.save();
 
-    return NextResponse.json({ transaction }, { status: 201 })
+    return NextResponse.json({ transaction }, { status: 201 });
   } catch (error) {
-    console.error("Create transaction error:", error)
-    return NextResponse.json({ error: "Internal server error" }, { status: 500 })
+    console.error("Create transaction error:", error);
+    return NextResponse.json(
+      { error: "Internal server error" },
+      { status: 500 }
+    );
   }
 }
-

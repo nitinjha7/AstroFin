@@ -1,6 +1,10 @@
 "use client";
 
-import { useState, useEffect } from "react";
+// <<<<<<< nitin
+// import { useState, useEffect } from "react";
+// =======
+import React, { useState, useEffect, ReactElement } from "react";
+// >>>>>>> main
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -33,11 +37,16 @@ import { toast } from "@/hooks/use-toast";
 import { Progress } from "@/components/ui/progress";
 import { Plus, Target } from "lucide-react";
 import UpdateProgressDialog from "@/components/savingGoals/updateProgressDialog";
+import { IGoal } from "@/models/goal";
 
 export default function GoalsPage() {
   const [open, setOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
-  const [goals, setGoals] = useState([]);
+// <<<<<<< nitin
+//   const [goals, setGoals] = useState([]);
+// =======
+  const [goals, setGoals] = useState<IGoal[]>([]);
+// >>>>>>> main
   const [loading, setLoading] = useState(true);
   const [formData, setFormData] = useState({
     name: "",
@@ -75,16 +84,30 @@ export default function GoalsPage() {
     fetchGoals();
   }, []);
 
+//-- <<<<<<< nitin
   const handleChange = (e) => {
+//======= -->
+  const handleChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+  ) => {
+// >>>>>>> main
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
-  const handleSelectChange = (name, value) => {
+//-- <<<<<<< nitin
+//   const handleSelectChange = (name, value) => {
+//     setFormData((prev) => ({ ...prev, [name]: value }));
+//   };
+// 
+//   const handleSubmit = async (e) => {
+// ======= -->
+  const handleSelectChange = (name: string, value: string) => {
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
-  const handleSubmit = async (e) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+// >>>>>>> main
     e.preventDefault();
     setIsLoading(true);
 
@@ -107,7 +130,13 @@ export default function GoalsPage() {
         description: "Your savings goal has been created successfully.",
       });
 
+//<<<<<<< nitin
       setGoals([...goals, data.goal]);
+// <!-- =======
+      // Add the new goal to the state
+      setGoals([...goals, data.goal]);
+
+// >>>>>>> main -->
       setOpen(false);
       setFormData({
         name: "",
@@ -117,7 +146,11 @@ export default function GoalsPage() {
         category: "",
         description: "",
       });
+//<!-- <<<<<<< nitin
     } catch (error) {
+// ======= -->
+    } catch (error:any) {
+// >>>>>>> main
       toast({
         title: "Something went wrong",
         description:
@@ -128,6 +161,7 @@ export default function GoalsPage() {
       setIsLoading(false);
     }
   };
+// <!-- <<<<<<< nitin -->
 
   const updateGoalProgress = (updatedGoal) => {
     setGoals((prevGoals) =>
@@ -136,6 +170,8 @@ export default function GoalsPage() {
       )
     );
   };
+//<!-- =======
+//>>>>>>> main -->
 
   if (loading) {
     return (
@@ -275,6 +311,10 @@ export default function GoalsPage() {
           </Card>
         ) : (
           goals.map((goal) => {
+// <<<<<<< nitin
+// =======
+//             // Calculate progress percentage
+// >>>>>>> main
             const progress = Math.round(
               (goal.currentAmount / goal.targetAmount) * 100
             );

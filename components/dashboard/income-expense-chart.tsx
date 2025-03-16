@@ -1,53 +1,82 @@
-"use client"
+"use client";
+import { ITransaction } from "@/models/transaction";
+import { useEffect, useState } from "react";
+import {
+  Area,
+  AreaChart,
+  CartesianGrid,
+  ResponsiveContainer,
+  Tooltip,
+  XAxis,
+  YAxis,
+  Legend,
+} from "recharts";
 
-import { Area, AreaChart, CartesianGrid, Legend, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts"
-
-const data = [
-  {
-    name: "Jan",
-    income: 8000,
-    expenses: 5500,
-  },
-  {
-    name: "Feb",
-    income: 8200,
-    expenses: 6000,
-  },
-  {
-    name: "Mar",
-    income: 9000,
-    expenses: 6500,
-  },
-  {
-    name: "Apr",
-    income: 8700,
-    expenses: 5800,
-  },
-  {
-    name: "May",
-    income: 9500,
-    expenses: 7000,
-  },
-  {
-    name: "Jun",
-    income: 10000,
-    expenses: 7500,
-  },
-]
-
+interface IMonthData {
+  name: string;
+  income: number;
+  expenses: number;
+}
+interface IGroupedDataByMonth {
+  [key: string]: IMonthData;
+}
 export function IncomeExpenseChart() {
+  const [chartData, setChartData] = useState<IMonthData[]>([]);
+
+  useEffect(() => {
+    fetchChartData();
+  }, []);
+
+  async function fetchChartData() {
+    const response = await fetch("/api/transactions");
+    const data = await response.json();
+
+    // Process transactions into a format suitable for recharts
+    const groupedData: IGroupedDataByMonth = {};
+    data.transactions.forEach((transaction: ITransaction) => {
+      const month = new Date(transaction.date).toLocaleString("default", {
+        month: "short",
+      });
+      if (!groupedData[month])
+        groupedData[month] = { name: month, income: 0, expenses: 0 };
+      if (transaction.type === "income")
+        groupedData[month].income += transaction.amount;
+      else groupedData[month].expenses += Math.abs(transaction.amount);
+    });
+
+    let tempGroupedData: IMonthData[] = [];
+
+    for (let key in groupedData) {
+      tempGroupedData.push(groupedData[key]);
+    }
+    setChartData(tempGroupedData);
+  }
+
   return (
     <ResponsiveContainer width="100%" height="100%">
-      <AreaChart data={data}>
+      <AreaChart data={chartData}>
         <CartesianGrid strokeDasharray="3 3" />
         <XAxis dataKey="name" />
         <YAxis />
-        <Tooltip formatter={(value) => [`₹${value}`, ""]} />
+        <Tooltip />
         <Legend />
-        <Area type="monotone" dataKey="income" stroke="#4f46e5" fill="#4f46e5" fillOpacity={0.2} name="Income" />
-        <Area type="monotone" dataKey="expenses" stroke="#ef4444" fill="#ef4444" fillOpacity={0.2} name="Expenses" />
+        <Area
+          type="monotone"
+          dataKey="income"
+          stroke="#4f46e5"
+          fill="#4f46e5"
+          fillOpacity={0.2}
+          name="Income"
+        />
+        <Area
+          type="monotone"
+          dataKey="expenses"
+          stroke="#ef4444"
+          fill="#ef4444"
+          fillOpacity={0.2}
+          name="Expenses"
+        />
       </AreaChart>
     </ResponsiveContainer>
-  )
+  );
 }
-
