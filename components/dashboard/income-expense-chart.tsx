@@ -1,9 +1,27 @@
 "use client";
+import { ITransaction } from "@/models/transaction";
 import { useEffect, useState } from "react";
-import { Area, AreaChart, CartesianGrid, ResponsiveContainer, Tooltip, XAxis, YAxis, Legend } from "recharts";
+import {
+  Area,
+  AreaChart,
+  CartesianGrid,
+  ResponsiveContainer,
+  Tooltip,
+  XAxis,
+  YAxis,
+  Legend,
+} from "recharts";
 
+interface IMonthData {
+  name: string;
+  income: number;
+  expenses: number;
+}
+interface IGroupedDataByMonth {
+  [key: string]: IMonthData;
+}
 export function IncomeExpenseChart() {
-  const [chartData, setChartData] = useState([]);
+  const [chartData, setChartData] = useState<IMonthData[]>([]);
 
   useEffect(() => {
     fetchChartData();
@@ -14,15 +32,24 @@ export function IncomeExpenseChart() {
     const data = await response.json();
 
     // Process transactions into a format suitable for recharts
-    const groupedData = {};
-    data.transactions.forEach((transaction) => {
-      const month = new Date(transaction.date).toLocaleString("default", { month: "short" });
-      if (!groupedData[month]) groupedData[month] = { name: month, income: 0, expenses: 0 };
-      if (transaction.type === "income") groupedData[month].income += transaction.amount;
+    const groupedData: IGroupedDataByMonth = {};
+    data.transactions.forEach((transaction: ITransaction) => {
+      const month = new Date(transaction.date).toLocaleString("default", {
+        month: "short",
+      });
+      if (!groupedData[month])
+        groupedData[month] = { name: month, income: 0, expenses: 0 };
+      if (transaction.type === "income")
+        groupedData[month].income += transaction.amount;
       else groupedData[month].expenses += Math.abs(transaction.amount);
     });
 
-    setChartData(Object.values(groupedData));
+    let tempGroupedData: IMonthData[] = [];
+
+    for (let key in groupedData) {
+      tempGroupedData.push(groupedData[key]);
+    }
+    setChartData(tempGroupedData);
   }
 
   return (
@@ -33,8 +60,22 @@ export function IncomeExpenseChart() {
         <YAxis />
         <Tooltip />
         <Legend />
-        <Area type="monotone" dataKey="income" stroke="#4f46e5" fill="#4f46e5" fillOpacity={0.2} name="Income" />
-        <Area type="monotone" dataKey="expenses" stroke="#ef4444" fill="#ef4444" fillOpacity={0.2} name="Expenses" />
+        <Area
+          type="monotone"
+          dataKey="income"
+          stroke="#4f46e5"
+          fill="#4f46e5"
+          fillOpacity={0.2}
+          name="Income"
+        />
+        <Area
+          type="monotone"
+          dataKey="expenses"
+          stroke="#ef4444"
+          fill="#ef4444"
+          fillOpacity={0.2}
+          name="Expenses"
+        />
       </AreaChart>
     </ResponsiveContainer>
   );
