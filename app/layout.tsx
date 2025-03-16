@@ -1,5 +1,5 @@
 import { Inter } from "next/font/google";
-import { ThemeProvider } from "@/components/theme-provider";
+import { ThemeProvider } from "@/lib/theme-provider";
 import { SessionProvider } from "@/components/providers/session-provider";
 import "./globals.css";
 
@@ -12,7 +12,7 @@ export const metadata = {
   generator: "v0.dev",
 };
 
-export default function RootLayout({ children }: { children: ReactElement }) {
+export default function RootLayout({ children }: { children: ReactNode }) {
   return (
     <html lang="en" suppressHydrationWarning>
       <body className={inter.className}>
@@ -27,4 +27,4 @@ export default function RootLayout({ children }: { children: ReactElement }) {
 }
 
 import "./globals.css";
-import { ReactElement } from "react";
+import { ReactElement, ReactNode } from "react";

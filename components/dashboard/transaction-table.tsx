@@ -72,7 +72,9 @@ export function TransactionTable({ type = "all", searchTerm = "" }) {
 
         const data = await response.json();
         setTransactions(data.transactions || []);
-      } catch (error) {
+
+      } catch (error: any) {
+
         if (error.name !== "AbortError") {
           console.error("Error fetching transactions:", error);
           toast({
@@ -199,7 +201,7 @@ export function TransactionTable({ type = "all", searchTerm = "" }) {
             <DropdownMenuContent align="end">
               <DropdownMenuLabel>Actions</DropdownMenuLabel>
               <DropdownMenuItem
-                onClick={() => navigator.clipboard.writeText(transaction._id)}
+                onClick={() => navigator.clipboard.writeText(transaction._id!)}
               >
                 Copy transaction ID
               </DropdownMenuItem>
@@ -208,7 +210,7 @@ export function TransactionTable({ type = "all", searchTerm = "" }) {
               <DropdownMenuItem>Edit transaction</DropdownMenuItem>
               <DropdownMenuItem
                 className="text-red-600"
-                onClick={() => deleteTransaction(transaction._id)}
+                onClick={() => deleteTransaction(transaction._id!)}
               >
                 Delete transaction
               </DropdownMenuItem>

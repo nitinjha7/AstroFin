@@ -16,20 +16,20 @@ import {
   Mic,
   Bot,
   User,
-  Sparkles,
+  // Sparkles,
   Loader2,
-  ChevronDown,
-  ChevronUp,
-  RefreshCw,
-  Lightbulb,
-  Coins,
-  TrendingUp,
-  PiggyBank,
+  // ChevronDown,
+  // ChevronUp,
+  // RefreshCw,
+  // Lightbulb,
+  // Coins,
+  // TrendingUp,
+  // PiggyBank,
 } from "lucide-react";
 import aiHelper, { userRequestFromFrontend } from "@/lib/gemini";
 
 import Markdown from "react-markdown";
-import { ITransaction } from "@/models/transaction";
+// import { ITransaction } from "@/models/transaction";
 
 export interface IMessage {
   id: string;

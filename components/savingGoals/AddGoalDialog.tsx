@@ -68,7 +68,6 @@ export default function AddGoalDialog({ onAdd, setOpen }: AddGoalDialogProps) {
       toast({
         title: "Success",
         description: "Goal added successfully!",
-        variant: "success",
       });
 
       // Reset form
@@ -117,7 +116,7 @@ export default function AddGoalDialog({ onAdd, setOpen }: AddGoalDialogProps) {
           <Input
             id="targetAmount"
             type="number"
-            value={targetAmount}
+            value={String(targetAmount || 0)}
             onChange={(e) => setTargetAmount(e.target.value)}
           />
         </div>

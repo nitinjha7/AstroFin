@@ -13,10 +13,17 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { toast } from "@/hooks/use-toast";
 import { RefreshCw } from "lucide-react";
+import { IGoal } from "@/models/goal";
 
-export default function UpdateProgressDialog({ goal, onUpdate }) {
+export default function UpdateProgressDialog({
+  goal,
+  onUpdate,
+}: {
+  goal: IGoal;
+  onUpdate: (val: IGoal) => void;
+}) {
   const [open, setOpen] = useState(false);
-  const [amountToAdd, setAmountToAdd] = useState("");
+  const [amountToAdd, setAmountToAdd] = useState<number>(0);
   const [isLoading, setIsLoading] = useState(false);
 
   const handleUpdateProgress = async () => {
@@ -53,8 +60,8 @@ export default function UpdateProgressDialog({ goal, onUpdate }) {
       });
 
       setOpen(false);
-      setAmountToAdd("");
-    } catch (error) {
+      setAmountToAdd(0);
+    } catch (error: any) {
       console.error("Update Progress Error:", error);
       toast({
         title: "Something went wrong",
@@ -89,7 +96,7 @@ export default function UpdateProgressDialog({ goal, onUpdate }) {
             type="number"
             min="1"
             value={amountToAdd}
-            onChange={(e) => setAmountToAdd(e.target.value)}
+            onChange={(e) => setAmountToAdd(parseInt(e.target.value))}
           />
         </div>
         <DialogFooter>
