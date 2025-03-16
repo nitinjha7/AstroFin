@@ -1,5 +1,16 @@
-import mongoose from "mongoose"
+import mongoose from "mongoose";
 
+export interface IGoal {
+  _id?: string;
+  userId?: string;
+  name: string;
+  targetAmount: number;
+  currentAmount: number;
+  targetDate: Date | number;
+  category: string;
+  description: string;
+  createdAt: Date | number;
+}
 const GoalSchema = new mongoose.Schema({
   userId: {
     type: mongoose.Schema.Types.ObjectId,
@@ -34,16 +45,15 @@ const GoalSchema = new mongoose.Schema({
     type: Date,
     default: Date.now,
   },
-})
+});
 
 // Calculate progress percentage
 GoalSchema.virtual("progress").get(function () {
-  return Math.round((this.currentAmount / this.targetAmount) * 100)
-})
+  return Math.round((this.currentAmount / this.targetAmount) * 100);
+});
 
 // Ensure virtuals are included in JSON output
-GoalSchema.set("toJSON", { virtuals: true })
-GoalSchema.set("toObject", { virtuals: true })
+GoalSchema.set("toJSON", { virtuals: true });
+GoalSchema.set("toObject", { virtuals: true });
 
-export const Goal = mongoose.models.Goal || mongoose.model("Goal", GoalSchema)
-
+export const Goal = mongoose.models.Goal || mongoose.model("Goal", GoalSchema);

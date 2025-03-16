@@ -122,7 +122,7 @@ export default function DashboardPage() {
                 </CardDescription>
               </CardHeader>
               <CardContent className="pl-2">
-                <Overview transactions={dashboardData.transactions} />
+                <Overview />
               </CardContent>
             </Card>
 
@@ -131,7 +131,7 @@ export default function DashboardPage() {
                 <CardTitle>Recent Transactions</CardTitle>
               </CardHeader>
               <CardContent>
-                <RecentTransactions transactions={dashboardData.transactions} />
+                <RecentTransactions />
               </CardContent>
             </Card>
           </div>

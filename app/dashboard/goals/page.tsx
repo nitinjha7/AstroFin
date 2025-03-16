@@ -1,8 +1,15 @@
-"use client"
+"use client";
 
-import { useState, useEffect } from "react"
-import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
+import React, { useState, useEffect, ReactElement } from "react";
+import { Button } from "@/components/ui/button";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import {
   Dialog,
   DialogContent,
@@ -11,20 +18,27 @@ import {
   DialogHeader,
   DialogTitle,
   DialogTrigger,
-} from "@/components/ui/dialog"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { Textarea } from "@/components/ui/textarea"
-import { toast } from "@/hooks/use-toast"
-import { Progress } from "@/components/ui/progress"
-import { Plus, Target } from "lucide-react"
+} from "@/components/ui/dialog";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { Textarea } from "@/components/ui/textarea";
+import { toast } from "@/hooks/use-toast";
+import { Progress } from "@/components/ui/progress";
+import { Plus, Target } from "lucide-react";
+import { IGoal } from "@/models/goal";
 
 export default function GoalsPage() {
-  const [open, setOpen] = useState(false)
-  const [isLoading, setIsLoading] = useState(false)
-  const [goals, setGoals] = useState([])
-  const [loading, setLoading] = useState(true)
+  const [open, setOpen] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+  const [goals, setGoals] = useState<IGoal[]>([]);
+  const [loading, setLoading] = useState(true);
   const [formData, setFormData] = useState({
     name: "",
     targetAmount: "",
@@ -32,71 +46,73 @@ export default function GoalsPage() {
     targetDate: "",
     category: "",
     description: "",
-  })
+  });
 
   useEffect(() => {
     const fetchGoals = async () => {
       try {
-        setLoading(true)
-        const response = await fetch("/api/goals")
+        setLoading(true);
+        const response = await fetch("/api/goals");
 
         if (!response.ok) {
-          throw new Error("Failed to fetch goals")
+          throw new Error("Failed to fetch goals");
         }
 
-        const data = await response.json()
-        setGoals(data.goals || [])
+        const data = await response.json();
+        setGoals(data.goals || []);
       } catch (error) {
-        console.error("Error fetching goals:", error)
+        console.error("Error fetching goals:", error);
         toast({
           title: "Error",
           description: "Failed to load savings goals. Please try again.",
           variant: "destructive",
-        })
+        });
       } finally {
-        setLoading(false)
+        setLoading(false);
       }
-    }
+    };
 
-    fetchGoals()
-  }, [])
+    fetchGoals();
+  }, []);
 
-  const handleChange = (e) => {
-    const { name, value } = e.target
-    setFormData((prev) => ({ ...prev, [name]: value }))
-  }
+  const handleChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+  ) => {
+    const { name, value } = e.target;
+    setFormData((prev) => ({ ...prev, [name]: value }));
+  };
 
-  const handleSelectChange = (name, value) => {
-    setFormData((prev) => ({ ...prev, [name]: value }))
-  }
+  const handleSelectChange = (name: string, value: string) => {
+    setFormData((prev) => ({ ...prev, [name]: value }));
+  };
 
-  const handleSubmit = async (e) => {
-    e.preventDefault()
-    setIsLoading(true)
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    setIsLoading(true);
 
     try {
       const response = await fetch("/api/goals", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(formData),
-      })
+      });
 
       if (!response.ok) {
-        const errorData = await response.json()
-        throw new Error(errorData.error || "Failed to create goal")
+        const errorData = await response.json();
+        throw new Error(errorData.error || "Failed to create goal");
       }
 
-      const data = await response.json()
+      const data = await response.json();
 
       toast({
         title: "Goal created",
         description: "Your savings goal has been created successfully.",
-      })
+      });
 
       // Add the new goal to the state
-      setGoals([...goals, data.goal])
+      setGoals([...goals, data.goal]);
 
-      setOpen(false)
+      setOpen(false);
       setFormData({
         name: "",
         targetAmount: "",
@@ -104,17 +120,18 @@ export default function GoalsPage() {
         targetDate: "",
         category: "",
         description: "",
-      })
-    } catch (error) {
+      });
+    } catch (error:any) {
       toast({
         title: "Something went wrong",
-        description: error.message || "Your goal couldn't be created. Please try again.",
+        description:
+          error.message || "Your goal couldn't be created. Please try again.",
         variant: "destructive",
-      })
+      });
     } finally {
-      setIsLoading(false)
+      setIsLoading(false);
     }
-  }
+  };
 
   if (loading) {
     return (
@@ -126,7 +143,7 @@ export default function GoalsPage() {
           <p>Loading savings goals...</p>
         </div>
       </div>
-    )
+    );
   }
 
   return (
@@ -145,7 +162,8 @@ export default function GoalsPage() {
               <DialogHeader>
                 <DialogTitle>Create a new savings goal</DialogTitle>
                 <DialogDescription>
-                  Set a target and track your progress towards your financial goals.
+                  Set a target and track your progress towards your financial
+                  goals.
                 </DialogDescription>
               </DialogHeader>
               <div className="grid gap-4 py-4">
@@ -201,7 +219,9 @@ export default function GoalsPage() {
                   <Select
                     name="category"
                     value={formData.category}
-                    onValueChange={(value) => handleSelectChange("category", value)}
+                    onValueChange={(value) =>
+                      handleSelectChange("category", value)
+                    }
                   >
                     <SelectTrigger id="category">
                       <SelectValue placeholder="Select category" />
@@ -243,13 +263,18 @@ export default function GoalsPage() {
         {goals.length === 0 ? (
           <Card className="col-span-full">
             <CardContent className="p-6 text-center">
-              <p>You don't have any savings goals yet. Create your first goal to get started!</p>
+              <p>
+                You don't have any savings goals yet. Create your first goal to
+                get started!
+              </p>
             </CardContent>
           </Card>
         ) : (
           goals.map((goal) => {
             // Calculate progress percentage
-            const progress = Math.round((goal.currentAmount / goal.targetAmount) * 100)
+            const progress = Math.round(
+              (goal.currentAmount / goal.targetAmount) * 100
+            );
 
             return (
               <Card key={goal._id}>
@@ -273,7 +298,9 @@ export default function GoalsPage() {
                   <div className="grid grid-cols-2 gap-4 text-sm">
                     <div>
                       <p className="text-muted-foreground">Target Date</p>
-                      <p className="font-medium">{new Date(goal.targetDate).toLocaleDateString()}</p>
+                      <p className="font-medium">
+                        {new Date(goal.targetDate).toLocaleDateString()}
+                      </p>
                     </div>
                     <div>
                       <p className="text-muted-foreground">Progress</p>
@@ -287,11 +314,10 @@ export default function GoalsPage() {
                   </Button>
                 </CardFooter>
               </Card>
-            )
+            );
           })
         )}
       </div>
     </div>
-  )
+  );
 }
-
