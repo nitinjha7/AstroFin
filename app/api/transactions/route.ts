@@ -50,6 +50,54 @@ export async function GET(req: Request) {
   }
 }
 
+export async function POST(req: Request) {
+  try {
+    const session = await getServerSession(authOptions);
+
+    if (!session || !session.user?.id) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
+
+    const userId = session.user.id;
+    const { type, amount, category, date, description } = await req.json();
+
+    // Validate input
+    if (!type || !amount || !category || !date) {
+      return NextResponse.json(
+        { error: "Missing required fields" },
+        { status: 400 }
+      );
+    }
+
+    // Connect to database
+    await connectToDatabase();
+
+    // Create transaction
+    const transaction = new Transaction({
+      userId,
+      type,
+      amount:
+        type === "expense"
+          ? -Math.abs(Number(amount))
+          : Math.abs(Number(amount)),
+      category,
+      date: new Date(date),
+      description,
+    });
+
+    await transaction.save();
+
+    return NextResponse.json({ transaction }, { status: 201 });
+  } catch (error) {
+    console.error("Create transaction error:", error);
+    return NextResponse.json(
+      { error: "Internal server error" },
+      { status: 500 }
+    );
+  }
+}
+
+/*
 // Create a new transaction
 export async function POST(req: Request) {
   try {
@@ -117,3 +165,4 @@ export async function POST(req: Request) {
     );
   }
 }
+  */
