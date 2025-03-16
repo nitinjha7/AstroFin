@@ -41,7 +41,7 @@ import { toast } from "@/hooks/use-toast";
 import { ITransaction } from "@/models/transaction";
 
 export function TransactionTable({ type = "all", searchTerm = "" }) {
-  const [transactions, setTransactions] = useState([]);
+  const [transactions, setTransactions] = useState<ITransaction[]>([]);
   const [loading, setLoading] = useState(true);
   const [sorting, setSorting] = useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
@@ -51,6 +51,8 @@ export function TransactionTable({ type = "all", searchTerm = "" }) {
   });
 
   useEffect(() => {
+    const abortController = new AbortController();
+
     const fetchTransactions = async () => {
       try {
         setLoading(true);
@@ -60,7 +62,8 @@ export function TransactionTable({ type = "all", searchTerm = "" }) {
         }
 
         const response = await fetch(
-          `/api/transactions?${queryParams.toString()}`
+          `/api/transactions?${queryParams.toString()}`,
+          { signal: abortController.signal }
         );
 
         if (!response.ok) {
@@ -70,19 +73,32 @@ export function TransactionTable({ type = "all", searchTerm = "" }) {
         const data = await response.json();
         setTransactions(data.transactions || []);
       } catch (error) {
-        console.error("Error fetching transactions:", error);
-        toast({
-          title: "Error",
-          description: "Failed to load transactions. Please try again.",
-          variant: "destructive",
-        });
+        if (error.name !== "AbortError") {
+          console.error("Error fetching transactions:", error);
+          toast({
+            title: "Error",
+            description: "Failed to load transactions. Please try again.",
+            variant: "destructive",
+          });
+        }
       } finally {
-        setLoading(false);
+        if (!abortController.signal.aborted) {
+          setLoading(false);
+        }
       }
     };
 
     fetchTransactions();
+
+    return () => {
+      abortController.abort();
+    };
   }, [type]);
+
+  // Reset pagination when search term changes
+  useEffect(() => {
+    table.setPageIndex(0);
+  }, [searchTerm]);
 
   // Filter transactions based on search term
   const filteredTransactions = transactions.filter(
@@ -97,7 +113,11 @@ export function TransactionTable({ type = "all", searchTerm = "" }) {
     }
   );
 
-  const deleteTransaction = async (id:string) => {
+  const deleteTransaction = async (id: string) => {
+    if (!window.confirm("Are you sure you want to delete this transaction?")) {
+      return;
+    }
+
     try {
       const response = await fetch(`/api/transactions/${id}`, {
         method: "DELETE",
@@ -108,7 +128,7 @@ export function TransactionTable({ type = "all", searchTerm = "" }) {
       }
 
       // Remove from state
-      setTransactions(transactions.filter((t:ITransaction) => t._id !== id));
+      setTransactions((prev) => prev.filter((t) => t._id !== id));
 
       toast({
         title: "Transaction deleted",
@@ -123,7 +143,7 @@ export function TransactionTable({ type = "all", searchTerm = "" }) {
     }
   };
 
-  const columns: ColumnDef<any>[] = [
+  const columns: ColumnDef<ITransaction>[] = [
     {
       accessorKey: "date",
       header: "Date",
