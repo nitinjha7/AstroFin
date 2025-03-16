@@ -11,9 +11,10 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { ITransaction } from "@/models/transaction";
 
 export function RecentTransactions() {
-  const [transactions, setTransactions] = useState([]);
+  const [transactions, setTransactions] = useState<ITransaction[]>([]);
 
   useEffect(() => {
     async function fetchTransactions() {
@@ -28,7 +29,7 @@ export function RecentTransactions() {
   return (
     <div className="space-y-4">
       {transactions.map((transaction) => (
-        <div key={transaction.id} className="flex items-center justify-between">
+        <div key={transaction._id} className="flex items-center justify-between">
           <div className="flex items-center gap-4">
             {/* Fixed className syntax for transaction icon */}
             <div

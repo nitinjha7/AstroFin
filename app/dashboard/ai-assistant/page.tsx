@@ -28,7 +28,8 @@ import {
 } from "lucide-react";
 import aiHelper, { userRequestFromFrontend } from "@/lib/gemini";
 
-import MarkdownPreview from "@uiw/react-markdown-preview";
+import Markdown from "react-markdown";
+import { ITransaction } from "@/models/transaction";
 
 export interface IMessage {
   id: string;
@@ -62,6 +63,7 @@ function AIAssistant() {
   const [input, setInput] = useState("");
   const [loading, setLoading] = useState(false);
   const [showSuggestions, setShowSuggestions] = useState(true);
+  const [selectedTimeRange, setSelectedTimeRange] = useState<string>("");
   const messagesEndRef = useRef(null);
 
   // Auto-scroll to bottom of messages
@@ -71,7 +73,6 @@ function AIAssistant() {
 
   const handleSendMessage = async (messageText = input) => {
     if (!messageText.trim()) return;
-
     // Add user message
     const userMessage = {
       id: Date.now().toString(),
@@ -84,13 +85,40 @@ function AIAssistant() {
     setInput("");
     setLoading(true);
 
+    let transactionData: any;
+    if (selectedTimeRange === "Last Month") {
+      const currDate = new Date();
+      let startDate = currDate.getTime() - 30 * 24 * 60 * 60 * 1000;
+
+      let endDate = currDate.getTime();
+      transactionData = await fetch(
+        `/api/transactions?startDate=${startDate}&endDate=${endDate}`
+      );
+
+      transactionData = await transactionData.json();
+    }
+    if (selectedTimeRange === "Last Week") {
+      const currDate = new Date();
+      let startDate = currDate.getTime() - 30 * 24 * 60 * 60 * 1000;
+
+      let endDate = currDate.getTime();
+      transactionData = await fetch(
+        `/api/transactions?startDate=${startDate}&endDate=${endDate}`
+      );
+
+      transactionData = await transactionData.json();
+    }
+
     // Simulate AI response delay
     setTimeout(() => {
-      generateAIResponse(userMessage);
+      generateAIResponse({
+        userMessage: userMessage,
+        transactionData: transactionData,
+      });
     }, 1500);
   };
 
-  const generateAIResponse = async (userMessage: IMessage) => {
+  const generateAIResponse = async (userMessage: any) => {
     let aiResponse = "";
 
     aiResponse = await aiHelper(userRequestFromFrontend(userMessage));
@@ -122,7 +150,45 @@ function AIAssistant() {
   };
 
   return (
-    <div className="w-full">
+    <div className="w-full relative">
+      <div className="absolute top-4 right-4 border  bg-gray-100 rounded-md flex gap-4 items-center px-1">
+        <p
+          className={
+            selectedTimeRange === ""
+              ? "bg-white rounded-md py-2 px-1 cursor-pointer"
+              : "cursor-pointer"
+          }
+          onClick={() => {
+            setSelectedTimeRange("");
+          }}
+        >
+          None
+        </p>{" "}
+        <p
+          className={
+            selectedTimeRange === "Last Month"
+              ? "bg-white rounded-md py-2 px-1 cursor-pointer"
+              : "cursor-pointer"
+          }
+          onClick={() => {
+            setSelectedTimeRange("Last Month");
+          }}
+        >
+          Last Month
+        </p>
+        <p
+          className={
+            selectedTimeRange === "Last Week"
+              ? "bg-white rounded-md py-2 px-1 cursor-pointer"
+              : " cursor-pointer"
+          }
+          onClick={() => {
+            setSelectedTimeRange("Last Week");
+          }}
+        >
+          Last Week
+        </p>
+      </div>
       <Card className="md:col-span-2 flex flex-col h-[80vh]">
         <CardHeader className="pb-2">
           <CardTitle className="flex items-center">
@@ -135,7 +201,7 @@ function AIAssistant() {
         </CardHeader>
 
         <CardContent className="flex-grow overflow-y-auto pb-0">
-          <div className="space-y-4">
+          <div className="space-y-2">
             {messages.map((message) => (
               <div
                 key={message.id}
@@ -171,15 +237,7 @@ function AIAssistant() {
                       }`}
                     >
                       <div className="whitespace-pre-wrap markdown-container">
-                        <MarkdownPreview
-                          source={message.content}
-                          style={{
-                            padding: "2px",
-                            background: "transparent",
-                            color: message.role === "user" ? "white" : "black",
-                            textWrap: "wrap",
-                          }}
-                        />
+                        <Markdown>{message.content}</Markdown>
                       </div>
                     </div>
                     <div
