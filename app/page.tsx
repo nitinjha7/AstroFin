@@ -58,11 +58,13 @@ export default function Home() {
                   </Link>
                 </div>
               </div>
-              <img
-                src="/placeholder.svg?height=550&width=800"
-                alt="Dashboard Preview"
-                className="mx-auto aspect-video overflow-hidden rounded-xl object-cover sm:w-full lg:order-last"
-              />
+              <div className="">
+                <img
+                  src="/main.png"
+                  alt="Dashboard Preview"
+                  className=" border w-full h-full"
+                />
+              </div>
             </div>
           </div>
         </section>

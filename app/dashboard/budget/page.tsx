@@ -73,7 +73,9 @@ function BudgetDashboard() {
   return (
     <div className="space-y-4 p-4">
       <h1 className="text-xl font-bold">Budget Dashboard</h1>
-      <h2 className="text-lg font-semibold">{format(new Date(month), "MMMM yyyy")}</h2>
+      <h2 className="text-lg font-semibold">
+        {format(new Date(month), "MMMM yyyy")}
+      </h2>
 
       {/* Month Selector */}
       <div className="flex gap-2">
@@ -96,7 +98,9 @@ function BudgetDashboard() {
           >
             <option value="">Select Category</option>
             {categories.map((cat) => (
-              <option key={cat.value} value={cat.value}>{cat.label}</option>
+              <option key={cat.value} value={cat.value}>
+                {cat.label}
+              </option>
             ))}
           </select>
           <input
@@ -106,7 +110,9 @@ function BudgetDashboard() {
             onChange={(e) => setAmount(e.target.value)}
             className="border p-2 rounded"
           />
-          <Button onClick={setBudgetAmount} className="col-span-2">Set Budget</Button>
+          <Button onClick={setBudgetAmount} className="col-span-2">
+            Set Budget
+          </Button>
         </div>
       </div>
 
@@ -116,11 +122,15 @@ function BudgetDashboard() {
         {budgets.length > 0 ? (
           <ul className="space-y-2">
             {budgets.map((budget, index) => (
-              <li key={index} className="border p-2 rounded flex justify-between">
+              <li
+                key={index}
+                className="border p-2 rounded flex justify-between"
+              >
                 <span className="font-medium">
-                  {categories.find(c => c.value === budget.category)?.label || budget.category}
+                  {categories.find((c) => c.value === budget.category)?.label ||
+                    budget.category}
                 </span>
-                <span>₹{budget.amount}</span>
+                <span>{`₹${budget.currentAmount}/₹${budget.amount}`}</span>
               </li>
             ))}
           </ul>

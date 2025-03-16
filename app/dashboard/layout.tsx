@@ -72,12 +72,6 @@ export default function DashboardLayout({ children }: { children: ReactNode }) {
       active: pathname === "/dashboard/insights",
     },
     {
-      label: "Investments",
-      icon: LineChart,
-      href: "/dashboard/investments",
-      active: pathname === "/dashboard/investments",
-    },
-    {
       label: "Budget",
       icon: Wallet,
       href: "/dashboard/budget",
